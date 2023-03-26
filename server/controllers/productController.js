@@ -113,10 +113,10 @@ const productList = async (req, res) => {
     res.status(400).send(err);
   }
 };
+
 //all product list on the basis of category id
 const productByCategory = async (req, res) => {
   const { id } = req.params;
-  // console.log('id: ', id);
   try {
     const data = await getProdByCategory(id);
     res.status(200).send({ data: data });

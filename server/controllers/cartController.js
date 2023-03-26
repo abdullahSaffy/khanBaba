@@ -1,16 +1,14 @@
 const Cart = require('../models/cart');
 const Product = require('../models/product');
+
 // GET: add a product to the shopping cart when "Add to cart" button is pressed
 const addToCart = async (req, res) => {
   const productId = req.params.id;
 
   try {
     let user_cart;
-    // console.log('request user: ', req.user);
     if (req.user) {
       user_cart = await Cart.findOne({ user: req.user._id });
-
-      // console.log('user-cart: ', user_cart);
     }
     let cart;
     if (!req.user && req.session.cart) {
@@ -59,7 +57,7 @@ const addToCart = async (req, res) => {
     req.session.cart = cart;
     res.send({ message: 'success', cart: cart });
   } catch (err) {
-    res.send({ message: 'something wrong' });
+    res.send({ message: 'product is not added successfully' });
   }
 };
 
@@ -72,6 +70,7 @@ const reduceCart = async (req, res) => {
       user_cart = await Cart.findOne({ user: req.user._id });
     }
     let indexNo = user_cart.items.findIndex((p) => p.productId == prodId);
+
     if (indexNo > -1) {
       const product = await Product.findById(prodId);
       user_cart.items.filter((item) => item.qty != 0);

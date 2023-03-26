@@ -30,7 +30,6 @@ const allProducts = async (page, limit) => {
 
 const getProdByCategory = async (id) => {
   const data = await Product.find({ category: id });
-  console.log('data: ', data);
   return data;
 };
 

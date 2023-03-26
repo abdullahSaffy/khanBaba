@@ -4,7 +4,6 @@ const { addCategory, getCategoryById } = require('../services/categoryService');
 const setCategory = async (req, res) => {
   try {
     const { title } = req.body;
-    // console.log('title: ', title);
     if (!title) {
       return res.status(404).send({ message: 'title is required' });
     } else {

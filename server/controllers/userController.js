@@ -7,8 +7,8 @@ const {
   changePass,
 } = require('../services/userService');
 
+// create user
 const setUser = async (req, res) => {
-  //   console.log('req.body: ', req.body);
   const { name, email, password, verifyPassword } = req.body;
 
   if (!name || !email || !password || !verifyPassword) {
@@ -17,42 +17,33 @@ const setUser = async (req, res) => {
 
   // Check if user exists
   const userExists = await User.findOne({ email });
-
-  if (userExists) {
-    return res.send({ status: 'failed', message: 'Email already exists' });
-  }
+  if (userExists)
+    return res.status(400).json({ message: 'User already exist' });
 
   // check password and verify password
-  if (password === verifyPassword) {
-    try {
-      const user = await registerUser(req.body);
-      await user.save();
-      res.status(201).send({ status: 'success', data: user });
-    } catch (error) {
-      //   console.log(error);
-      res.send({ status: 'failed', message: 'Unable to Register' });
-    }
-  } else {
-    res.send({
-      status: 'failed',
-      message: "Password and Confirm Password doesn't match",
-    });
-  }
+  if (password !== verifyPassword)
+    return res.status(400).json({ message: "Password don't match" });
+
+  const newUser = await registerUser(req.body);
+  await newUser.save();
+  res.status(200).send({ status: 'success', data: newUser });
 };
 
+// Get user
 const getUser = async (req, res) => {
   const { email, password } = req.body;
+
   if (!email || !password) {
     return res.send({
       status: false,
       message: 'Please enter your email and password',
     });
   }
+
   try {
     const user = await loginUser(req.body);
-    if (!user) {
-      return res.status(401).json({ msg: 'wrong credentials' });
-    }
+    if (!user) return res.status(404).json({ message: "User doesn't exist" });
+
     const hashedPassword = CryptoJS.AES.decrypt(
       user.password,
       process.env.PASS_SEC
@@ -74,8 +65,6 @@ const getUser = async (req, res) => {
       }
     );
 
-    // console.log('user._doc: ', user);
-
     res.status(200).send({ ...user._doc, token: accessToken });
   } catch (err) {
     res.status(500).json({ 'err: ': err });
@@ -96,8 +85,6 @@ const changePassword = async (req, res) => {
           password,
           process.env.PASS_SEC
         ).toString();
-
-        // console.log("hashPassword: ", req.user);
 
         const updateData = await changePass(req.user, hashPassword);
         res.send({ status: 'success', data: updateData });

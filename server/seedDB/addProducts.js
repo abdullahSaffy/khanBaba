@@ -211,6 +211,7 @@ async function seedDB() {
     var productCode1 = faker.helpers.replaceSymbolWithNumber('#######');
     var description1 = faker.lorem.sentences();
     var price1 = faker.random.number({ min: 10, max: 50 });
+    var sale1 = faker.random.number({ min: 5, max: 23 });
     var manufacturer1 = faker.lorem.paragraph(3);
 
     try {
@@ -221,6 +222,7 @@ async function seedDB() {
           imagePath: image[i],
           description: description1,
           price: price1,
+          sale: sale1,
           category: categoryData._id,
           manufacturer: manufacturer1,
           available: true,
